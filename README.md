@@ -1,6 +1,4 @@
-## Finance manager app
-
-Finance manager app test project
+## Pools updater
 
 ## Local setup
 
