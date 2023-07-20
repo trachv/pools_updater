@@ -1,18 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
+import { uniswapPool } from './uniswap.types';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class UniswapService {
-  constructor(private configService: ConfigService) {}
+  private readonly EXCHANGE_NAME = 'uniswap_v3';
+
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   async updatePoolsInfo() {
     const pools = await this.getAllPossiblePools();
-    console.log(pools);
+    await this.writePoolsToDb(pools);
   }
 
-  async getAllPossiblePools() {
-    const pools = [];
+  async getAllPossiblePools(): Promise<uniswapPool[]> {
+    const pools: uniswapPool[] = [];
     let hasNextPage = true;
     let skipCount = 0;
     const uniswapUrl = this.configService.get<string>(
@@ -28,10 +35,6 @@ export class UniswapService {
                 id
                 token0 { id symbol }
                 token1 { id symbol }
-                feeTier
-                liquidity
-                sqrtPrice
-                tick
               }
             }
           `,
@@ -66,6 +69,35 @@ export class UniswapService {
     }
 
     return pools;
+  }
+
+  async writePoolsToDb(pools: uniswapPool[]) {
+    try {
+      const operations = pools.map((pool) =>
+        this.prisma.pools.upsert({
+          where: {
+            exchange_pool: {
+              exchange: this.EXCHANGE_NAME,
+              pool: pool.id,
+            },
+          },
+          update: {
+            token0: JSON.stringify(pool.token0),
+            token1: JSON.stringify(pool.token1),
+          },
+          create: {
+            pool: pool.id,
+            exchange: this.EXCHANGE_NAME,
+            token0: JSON.stringify(pool.token0),
+            token1: JSON.stringify(pool.token1),
+          },
+        }),
+      );
+
+      await this.prisma.$transaction(operations);
+    } catch (error) {
+      console.log('Error writing pools to db');
+    }
   }
 
   async sleep(ms) {

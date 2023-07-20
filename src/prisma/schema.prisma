@@ -19,3 +19,13 @@ model ScheduledTasks {
 
   @@unique([appName, taskName])
 }
+
+model Pools {
+  id       Int    @id @unique() @default(autoincrement())
+  exchange String
+  pool     String
+  token0   String
+  token1   String
+
+  @@unique([exchange, pool])
+}

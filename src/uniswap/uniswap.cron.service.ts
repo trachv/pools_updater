@@ -20,6 +20,9 @@ export class UniswapCron extends CronService {
     await this.updatePoolsInfo();
   }
 
+  /**
+   * interval can be moved to env
+   */
   @Cron(CronExpression.EVERY_30_MINUTES, { name: 'update_pools_info_uniswap' })
   async updatePoolsInfo() {
     if (await this.isJobRunning(this.APP_NAME, this.TASK_NAME)) {
