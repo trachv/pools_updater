@@ -1,7 +1,9 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CronService } from './cron.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class UniswapCron extends CronService {
   constructor(protected readonly prisma: PrismaService) {
     super(prisma);
