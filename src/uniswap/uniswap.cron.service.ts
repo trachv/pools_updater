@@ -1,11 +1,15 @@
-import { PrismaService } from 'src/prisma/prisma.service';
-import { CronService } from './cron.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { CronService } from '../cron/cron.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Injectable } from '@nestjs/common';
+import { UniswapService } from './uniswap.service';
 
 @Injectable()
 export class UniswapCron extends CronService {
-  constructor(protected readonly prisma: PrismaService) {
+  constructor(
+    protected readonly prisma: PrismaService,
+    private readonly uniswapService: UniswapService,
+  ) {
     super(prisma);
   }
 
@@ -29,7 +33,7 @@ export class UniswapCron extends CronService {
 
     console.log(`Start job ${this.taskName} at ${new Date().toUTCString()}`);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await this.uniswapService.updatePoolsInfo();
       console.log(`Job ${this.taskName} completed successfully.`);
     } catch (error) {
       console.log(`Error execution Job ${this.taskName} error: ${error}`);

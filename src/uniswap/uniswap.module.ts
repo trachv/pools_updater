@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
-import { UniswapCron } from 'src/cron/uniswap.cron.service';
-import { PrismaModule } from 'src/prisma/prisma.module';
+import { UniswapCron } from './uniswap.cron.service';
+import { PrismaModule } from '../prisma/prisma.module';
+import { UniswapService } from './uniswap.service';
 
 /**
  * Uniswap module
@@ -8,6 +9,6 @@ import { PrismaModule } from 'src/prisma/prisma.module';
  */
 @Module({
   imports: [PrismaModule],
-  providers: [UniswapCron],
+  providers: [UniswapCron, UniswapService],
 })
 export class UniswapModule {}
