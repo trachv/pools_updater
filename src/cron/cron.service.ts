@@ -7,35 +7,38 @@ export abstract class CronService {
 
   protected async isJobRunning(
     appName: string,
-    jobName: string,
+    taskName: string,
   ): Promise<boolean> {
     const job = await this.prisma.scheduledTasks.findUnique({
       where: {
         appName_taskName: {
-          appName: appName,
-          taskName: jobName,
+          appName,
+          taskName,
         },
       },
     });
     return !!job;
   }
 
-  protected async startJob(appName: string, jobName: string): Promise<void> {
+  protected async startJob(appName: string, taskName: string): Promise<void> {
     await this.prisma.scheduledTasks.create({
       data: {
-        appName: appName,
-        taskName: jobName,
+        appName,
+        taskName,
         timeStart: new Date(),
       },
     });
   }
 
-  protected async completeJob(appName: string, jobName: string): Promise<void> {
+  protected async completeJob(
+    appName: string,
+    taskName: string,
+  ): Promise<void> {
     await this.prisma.scheduledTasks.delete({
       where: {
         appName_taskName: {
-          appName: appName,
-          taskName: jobName,
+          appName,
+          taskName,
         },
       },
     });
