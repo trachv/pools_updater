@@ -1,6 +1,6 @@
 ## Pools updater
 
-Application load pools data from UniswapV3 and save it to database   
+Application load pools data from UniswapV3 and store it to database   
 Database table is `Pools`  
 Data update is launched once at the start of the application and also every 30 minutes according to the schedule  
 
