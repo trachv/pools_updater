@@ -95,6 +95,7 @@ export class UniswapService {
       );
 
       await this.prisma.$transaction(operations);
+      console.log(`Wrote ${pools.length} pools to db successfully`);
     } catch (error) {
       console.log('Error writing pools to db');
     }
