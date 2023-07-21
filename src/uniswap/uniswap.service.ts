@@ -26,6 +26,11 @@ export class UniswapService {
       'UNISWAP_V3_SUBGRAPH_URL',
     );
 
+    /**
+     * Or we can use cursor pagination like in example below
+     * https://github.com/Uniswap/v3-info/blob/770a05dc1a191cf229432ebc43c1f2ceb3666e3b/src/data/pools/chartData.ts#L14
+     */
+
     while (hasNextPage) {
       try {
         const response = await axios.post(uniswapUrl, {
@@ -49,7 +54,7 @@ export class UniswapService {
         ) {
           console.info(`Fetched ${responseData.pools.length} pools`);
           pools.push(...responseData.pools);
-          skipCount += 1000;
+          skipCount += responseData.pools.length;
         } else {
           console.info('No more pools to fetch.');
           hasNextPage = false;
